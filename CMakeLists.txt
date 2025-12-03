@@ -1,0 +1,37 @@
+cmake_minimum_required(VERSION 3.21)
+
+project(aoc_2025 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 26)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+foreach (year RANGE 30)
+    set(full_year 20${year})
+    foreach (day RANGE 24)
+        if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${full_year}/day_${day})
+            SET(PROJECT_NAME_${full_year}${day} aoc_${full_year}_${day})
+            SET(PROJECT_DIR_${full_year}${day} ${full_year}/day_${day})
+        elseif (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${full_year}/day_0${day})
+            SET(PROJECT_NAME_${full_year}${day} aoc_${full_year}_0${day})
+            SET(PROJECT_DIR_${full_year}${day} ${full_year}/day_0${day})
+        endif ()
+
+        if (DEFINED PROJECT_NAME_${full_year}${day})
+            if (NOT NO_${PROJECT_NAME_${full_year}${day}})
+                MESSAGE(STATUS "Adding ${PROJECT_NAME_${full_year}${day}}")
+                SET(EXECUTABLE ${PROJECT_NAME_${full_year}${day}})
+
+                file(GLOB SRC_FILES ${PROJECT_DIR_${full_year}${day}}/*.cpp ${PROJECT_DIR_${full_year}${day}}/*.h)
+                add_executable(${EXECUTABLE} ${SRC_FILES})
+                target_include_directories(${EXECUTABLE} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/common ${CMAKE_CURRENT_SOURCE_DIR}/${full_year}/common)
+
+                if (APPLE)
+                    # better debug data visualizer on OSX with CLion
+                    target_compile_options(${EXECUTABLE} PRIVATE -gdwarf-3)
+                endif ()
+            else ()
+                MESSAGE(WARNING "Skipping ${PROJECT_NAME_${full_year}${day}} as NO_${PROJECT_NAME_${full_year}${day}} is set")
+            endif ()
+        endif ()
+    endforeach ()
+endforeach ()
