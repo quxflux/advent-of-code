@@ -24,11 +24,6 @@ foreach (year RANGE 30)
                 file(GLOB SRC_FILES ${PROJECT_DIR_${full_year}${day}}/*.cpp ${PROJECT_DIR_${full_year}${day}}/*.h)
                 add_executable(${EXECUTABLE} ${SRC_FILES})
                 target_include_directories(${EXECUTABLE} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/common ${CMAKE_CURRENT_SOURCE_DIR}/${full_year}/common)
-
-                if (APPLE)
-                    # better debug data visualizer on OSX with CLion
-                    target_compile_options(${EXECUTABLE} PRIVATE -gdwarf-3)
-                endif ()
             else ()
                 MESSAGE(WARNING "Skipping ${PROJECT_NAME_${full_year}${day}} as NO_${PROJECT_NAME_${full_year}${day}} is set")
             endif ()
