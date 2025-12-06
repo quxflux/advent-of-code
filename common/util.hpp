@@ -108,6 +108,15 @@ private:
 };
 
 template <typename T>
+auto col_view(const ptrdiff_t col_idx, const simple_mdarray<T>& data)
+{
+    return std::views::iota(size_t { 0 }, static_cast<size_t>(data.rows())) //
+        | std::views::transform([&, col_idx](const size_t r) {
+              return data[r, col_idx];
+          });
+}
+
+template <typename T>
 simple_mdarray<T> load_mdarray(invocable_r<T, char> auto char_convert_f, const load_input_params& params = {})
 {
     const auto lines = load_input_by_line(params) | std::ranges::to<std::vector>();
