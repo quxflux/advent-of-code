@@ -52,20 +52,15 @@ inline std::string read_file(const std::filesystem::path& p)
     return oss.str();
 }
 
-struct load_input_params {
-    std::string file_name = "input.txt";
-    std::filesystem::path dir = std::filesystem::path(std::source_location::current().file_name()).parent_path();
-};
-
-inline std::string_view load_input(const load_input_params& params = {})
+inline std::string_view load_input(const std::source_location& loc = std::source_location::current())
 {
-    static const auto input = read_file(params.dir / params.file_name);
+    static const auto input = read_file(std::filesystem::path(loc.file_name()).parent_path() / "input.txt");
     return std::string_view { input };
 }
 
-inline auto load_input_by_line(const load_input_params& params = {})
+inline auto load_input_by_line(const std::source_location& loc = std::source_location::current())
 {
-    return load_input(params) | std::views::split('\n') | std::views::transform(as_string_view) | std::views::filter(std::not_fn(&std::string_view::empty));
+    return load_input(loc) | std::views::split('\n') | std::views::transform(as_string_view) | std::views::filter(std::not_fn(&std::string_view::empty));
 }
 
 template <typename T>
@@ -117,9 +112,9 @@ auto col_view(const ptrdiff_t col_idx, const simple_mdarray<T>& data)
 }
 
 template <typename T>
-simple_mdarray<T> load_mdarray(invocable_r<T, char> auto char_convert_f, const load_input_params& params = {})
+simple_mdarray<T> load_mdarray(invocable_r<T, char> auto char_convert_f, const std::source_location& loc = std::source_location::current())
 {
-    const auto lines = load_input_by_line(params) | std::ranges::to<std::vector>();
+    const auto lines = load_input_by_line(loc) | std::ranges::to<std::vector>();
 
     const auto n_rows = lines.size();
     if (n_rows == 0)
