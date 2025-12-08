@@ -49,7 +49,7 @@ namespace {
     {
         if (c == '.')
             return field::empty;
-        if (quxflux::is_digit(c))
+        if (is_digit(c))
             return field::digit;
 
         return field::sign;
@@ -57,7 +57,7 @@ namespace {
 
     arr2d<char> read_input()
     {
-        auto lines = std::views::split(QUXFLUX_GET_INPUT(), '\n') | std::views::transform(quxflux::as_string_view);
+        auto lines = load_input_by_line();
         const auto height = std::ranges::distance(lines.begin(), lines.end());
         const auto width = std::ranges::size(lines.front());
 
