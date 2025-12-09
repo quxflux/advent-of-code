@@ -112,6 +112,15 @@ auto col_view(const ptrdiff_t col_idx, const simple_mdarray<T>& data)
 }
 
 template <typename T>
+auto colwise(const simple_mdarray<T>& data)
+{
+    return std::views::iota(size_t { 0 }, static_cast<size_t>(data.cols())) //
+        | std::views::transform([&](const size_t c) {
+              return col_view(c, data);
+          });
+}
+
+template <typename T>
 simple_mdarray<T> load_mdarray(invocable_r<T, char> auto char_convert_f, const std::source_location& loc = std::source_location::current())
 {
     const auto lines = load_input_by_line(loc) | std::ranges::to<std::vector>();
