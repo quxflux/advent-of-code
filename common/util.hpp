@@ -112,6 +112,12 @@ auto col_view(const ptrdiff_t col_idx, const simple_mdarray<T>& data)
 }
 
 template <typename T>
+auto row_view(const ptrdiff_t row_idx, const simple_mdarray<T>& data)
+{
+    return data.data().subspan(row_idx * data.cols(), data.cols());
+}
+
+template <typename T>
 auto colwise(const simple_mdarray<T>& data)
 {
     return std::views::iota(size_t { 0 }, static_cast<size_t>(data.cols())) //
