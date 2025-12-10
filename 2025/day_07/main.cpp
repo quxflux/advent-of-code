@@ -9,7 +9,7 @@ namespace {
         empty = '.',
         start = 'S',
         splitter = '^',
-        visited = '#'
+        visited = '#',
     };
 
     void print(const simple_mdarray<field>& map)
@@ -80,6 +80,32 @@ size_t first_task()
 
 size_t second_task()
 {
-    return 0;
+    auto [map, start_pos] = load_map();
+    simple_mdarray<value_type> scores(map.rows(), map.cols());
+
+    scores[0, start_pos] = 1;
+    for (size_t r = 1; r < map.rows(); ++r) {
+        std::ranges::copy(row_view(r - 1, scores), row_view(r, scores).begin());
+
+        const auto indices_of_splitters = row_view(r, map)
+            | std::views::enumerate
+            | std::views::filter([&](const auto rc) {
+                  const auto [c, val] = rc;
+                  return val == field::splitter;
+              })
+            | std::views::transform([](const auto rc) {
+                  const auto [c, _] = rc;
+                  return c;
+              })
+            | std::ranges::to<std::vector>();
+
+        for (const auto col : indices_of_splitters) {
+            scores[r, col - 1] += scores[r, col];
+            scores[r, col + 1] += scores[r, col];
+            scores[r, col] = 0;
+        }
+    }
+
+    return std::ranges::fold_left_first(row_view(scores.rows() - 1, scores), std::plus {}).value();
 }
 }

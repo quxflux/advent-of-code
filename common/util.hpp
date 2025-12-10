@@ -65,6 +65,8 @@ inline auto load_input_by_line(const std::source_location& loc = std::source_loc
 
 template <typename T>
 struct simple_mdarray {
+    using value_type = T;
+
     simple_mdarray(const size_t rows, const size_t cols)
         : rows_(rows)
         , cols_(cols)
@@ -103,7 +105,10 @@ private:
 };
 
 template <typename T>
-auto col_view(const ptrdiff_t col_idx, const simple_mdarray<T>& data)
+concept mdarray_like = std::same_as<simple_mdarray<typename T::value_type>, std::remove_cvref_t<T>>;
+
+template <mdarray_like T>
+auto col_view(const ptrdiff_t col_idx, T& data)
 {
     return std::views::iota(size_t { 0 }, static_cast<size_t>(data.rows())) //
         | std::views::transform([&, col_idx](const size_t r) {
@@ -111,14 +116,14 @@ auto col_view(const ptrdiff_t col_idx, const simple_mdarray<T>& data)
           });
 }
 
-template <typename T>
-auto row_view(const ptrdiff_t row_idx, const simple_mdarray<T>& data)
+template <mdarray_like T>
+auto row_view(const ptrdiff_t row_idx, T& data)
 {
     return data.data().subspan(row_idx * data.cols(), data.cols());
 }
 
-template <typename T>
-auto colwise(const simple_mdarray<T>& data)
+template <mdarray_like T>
+auto colwise(const T& data)
 {
     return std::views::iota(size_t { 0 }, static_cast<size_t>(data.cols())) //
         | std::views::transform([&](const size_t c) {
