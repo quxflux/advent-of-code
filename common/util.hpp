@@ -161,6 +161,28 @@ std::ostream& operator<<(std::ostream& os, const simple_mdarray<T>& m)
     return os;
 }
 
+struct progress {
+    float t = 0;
+};
+
+std::ostream& operator<<(std::ostream& os, const progress& p)
+{
+    constexpr auto width = 50;
+
+    const size_t pos = static_cast<size_t>((width - 2) * p.t);
+    os << '[';
+    for (size_t i = 0; i < width - 2; ++i) {
+        if (i < pos)
+            os << '=';
+        else if (i == pos)
+            os << '>';
+        else
+            os << ' ';
+    }
+    os << "] " << static_cast<size_t>(p.t * 100.0f) << " %\r";
+    return os;
+}
+
 size_t first_task();
 size_t second_task();
 }
